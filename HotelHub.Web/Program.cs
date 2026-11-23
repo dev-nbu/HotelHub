@@ -1,12 +1,16 @@
 using HotelHub.Data;
 using HotelHub.Data.Models.Auth;
+using HotelHub.Data.Seeding;
 using HotelHub.Web.Infrastructure;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 
-namespace HotelHub.Web {
-    public class Program {
-        public static void Main(string[] args) {
+namespace HotelHub.Web
+{
+    public class Program
+    {
+        public static async Task Main(string[] args)
+        {
             var builder = WebApplication.CreateBuilder(args);
 
             // Add services to the container.
@@ -17,7 +21,7 @@ namespace HotelHub.Web {
                 options.UseSqlServer(connectionString));
             builder.Services.AddDatabaseDeveloperPageExceptionFilter();
 
-            builder.Services.AddDefaultIdentity<ApplicationUser>(options => options.SignIn.RequireConfirmedAccount = true)
+            builder.Services.AddDefaultIdentity<ApplicationUser>(options => options.SignIn.RequireConfirmedAccount = false)
                 .AddRoles<IdentityRole<Guid>>()
                 .AddEntityFrameworkStores<ApplicationDbContext>();
             builder.Services.AddControllersWithViews();
@@ -25,10 +29,19 @@ namespace HotelHub.Web {
             var app = builder.Build();
 
             // Configure the HTTP request pipeline.
-            if (app.Environment.IsDevelopment()) {
+            if (app.Environment.IsDevelopment())
+            {
+                // Seed database with initial Admin user in Development
+                using (var scope = app.Services.CreateScope())
+                {
+                    var services = scope.ServiceProvider;
+                    await DbSeeder.SeedAsync(services);
+                }
+
                 app.UseMigrationsEndPoint();
             }
-            else {
+            else
+            {
                 app.UseExceptionHandler("/Home/Error");
                 // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
                 app.UseHsts();
@@ -37,6 +50,7 @@ namespace HotelHub.Web {
             app.UseHttpsRedirection();
             app.UseRouting();
 
+            app.UseAuthentication();
             app.UseAuthorization();
 
             app.MapStaticAssets();
@@ -47,7 +61,7 @@ namespace HotelHub.Web {
             app.MapRazorPages()
                .WithStaticAssets();
 
-            app.Run();
+            await app.RunAsync();
         }
     }
 }

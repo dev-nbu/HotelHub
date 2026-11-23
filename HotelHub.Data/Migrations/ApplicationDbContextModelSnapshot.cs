@@ -17,7 +17,7 @@ namespace HotelHub.Data.Migrations
         {
 #pragma warning disable 612, 618
             modelBuilder
-                .HasAnnotation("ProductVersion", "10.0.14")
+                .HasAnnotation("ProductVersion", "10.0.15")
                 .HasAnnotation("Relational:MaxIdentifierLength", 128);
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder);
@@ -681,6 +681,29 @@ namespace HotelHub.Data.Migrations
                         .HasFilter("[NormalizedName] IS NOT NULL");
 
                     b.ToTable("AspNetRoles", "auth");
+
+                    b.HasData(
+                        new
+                        {
+                            Id = new Guid("60c9d73b-b9c6-4453-8c2f-d25d5c5600fe"),
+                            ConcurrencyStamp = "60c9d73b-b9c6-4453-8c2f-d25d5c5600fe",
+                            Name = "Admin",
+                            NormalizedName = "ADMIN"
+                        },
+                        new
+                        {
+                            Id = new Guid("3f4d177f-147d-4787-8a83-d3c471aea4a8"),
+                            ConcurrencyStamp = "3f4d177f-147d-4787-8a83-d3c471aea4a8",
+                            Name = "Receptionist",
+                            NormalizedName = "RECEPTIONIST"
+                        },
+                        new
+                        {
+                            Id = new Guid("e5f11cde-1422-44b5-a281-9541a23ae14d"),
+                            ConcurrencyStamp = "e5f11cde-1422-44b5-a281-9541a23ae14d",
+                            Name = "Guest",
+                            NormalizedName = "GUEST"
+                        });
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<System.Guid>", b =>
