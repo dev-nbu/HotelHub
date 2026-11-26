@@ -85,8 +85,17 @@ public class DeletePersonalDataModel : PageModel
                 return Page();
             }
         }
+        //Locking the user 
+        await _userManager.SetLockoutEnabledAsync(user, true);
+        var result = await _userManager.SetLockoutEndDateAsync(user, DateTimeOffset.UtcNow.AddYears(100));
+        if (!result.Succeeded)
+        {
+            throw new InvalidOperationException("Unexpected error occurred deactivating user.");
+        }
 
-        var result = await _userManager.DeleteAsync(user);
+        await _userManager.UpdateSecurityStampAsync(user);
+
+
         var userId = await _userManager.GetUserIdAsync(user);
         if (!result.Succeeded)
         {
